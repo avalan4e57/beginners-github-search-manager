@@ -1,4 +1,4 @@
-# beginners-github-search-manager
+# BGSM or beginners-github-search-manager
 Helps beginners to search and contribute to open source projects with github
 
 I think many beginners want to try some real world programming. And one of the best ways is contributing to an open source project. 
