@@ -1,0 +1,31 @@
+{
+  "name": "bgsm",
+  "version": "0.0.1",
+  "description": "Helps beginners to search for and contribute to open source projects with github",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/avalan4e57/beginners-github-search-manager.git"
+  },
+  "keywords": [
+    "search",
+    "github",
+    "contribute",
+    "beginners",
+    "first",
+    "commit",
+    "manager"
+  ],
+  "author": "Igor Chernega",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/avalan4e57/beginners-github-search-manager/issues"
+  },
+  "homepage": "https://github.com/avalan4e57/beginners-github-search-manager#readme",
+  "dependencies": {
+    "jquery": "^3.2.1"
+  }
+}
