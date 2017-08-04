@@ -16,12 +16,12 @@ $('#main-search').on('click', function(e){
             console.log("Some error. No search results");
         } else {
             var resultsNumber = json.total_count;
-            var outHTML = "";
+            var outHTML = '<h2>' + resultsNumber + ' issues</h2>';
             var items = json.items;
             items.forEach(function(item, i, items) {
                 outHTML += addSearchResultItem(item);
             });
-            $('#test').html(outHTML);
+            $('#search-results').html(outHTML);
             console.log(json);
         } //end else statement
     } // end requestJSON function
@@ -30,11 +30,18 @@ $('#main-search').on('click', function(e){
 });
 
 function addSearchResultItem(item) {
-    var outHTML = "";
-    var title = '<div class="item-title"><a href="' + item.html_url + '">' + item.title + '</a></div>';
+    var outHTML = '';
+    var title = '<div class="item-title"><h4><a href="' + item.html_url + '">' + item.title + '</a></h4></div>';
     var descr = '<div class="item-descr">' + item.body + '</div>';
     var number = '<div class="item-number">#' + item.number + '</div>';
-    outHTML = number + title + descr;
+    var inWorkButton = '<button type="button" class="in-work btn btn-info">In Work</button>'
+    outHTML = number + title + descr + inWorkButton;
     outHTML = '<li>' + outHTML + '</li>';
     return outHTML;
 }
+
+
+$('.in-work').on('click', function(e) {
+    e.preventDefault();
+    alert("!");
+});

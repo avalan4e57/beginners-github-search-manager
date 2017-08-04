@@ -1,0 +1,45 @@
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+ul#search-results > li {
+    border-top: 1px #e1e4e8 solid;
+    padding: 20px 0;
+}
+
+#main-search {
+    margin: 25px 0;
+    padding: 20px 250px;
+}
+
+#issue-in-work {
+    margin-bottom: 20px;
+    overflow: auto;
+}
+
+#pr-issue, #issue-in-work {
+    height: 220px;
+    width: 120%;
+    border: 1px #e1e4e8 solid;
+    border-radius: 3px;
+    overflow: auto;
+    padding: 10%;
+}
+
+.item-number {
+    float: right;
+}
+
+.item-title, .item-descr {
+    padding-right: 70px;
+}
+
+.item-title {
+    margin-top: -10px;
+}
+
+button.in-work {
+    margin-top: 10px;
+}

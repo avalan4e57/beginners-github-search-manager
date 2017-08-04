@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/avalan4e57/beginners-github-search-manager#readme",
   "dependencies": {
+    "bootstrap": "^3.3.7",
     "jquery": "^3.2.1"
   }
 }
