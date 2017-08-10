@@ -1,5 +1,6 @@
-var issuesInWork = [];
-var issuesPR = [];
+const ISSUES_IN_WORK = [];
+const ISSUES_PR = [];
+
 $(function() {
     init();
 });
@@ -48,6 +49,9 @@ function clickINWORK() {
         let issueID = getNumberFromString($(this).parent().attr('id'));
         addIssueInWork(issueID);
         $(this).parent().hide();
+        let issue = ISSUES_IN_WORK.pop();
+        ISSUES_IN_WORK.push(issue);
+        updateManagerData('add in_work', issue);
         listenClickEvents(clickPR, clickDEL);
     });
 }
@@ -58,6 +62,9 @@ function clickPR() {
         let issueID = getNumberFromString($(this).parent().parent().parent().attr('id'));
         addIssueToPR(issueID);
         $(this).parent().parent().parent().hide();
+        let issue = ISSUES_PR.pop();
+        ISSUES_PR.push(issue);
+        updateManagerData('add pr', issue);
     });
 }
 
@@ -67,15 +74,16 @@ function clickDEL() {
         let issueID = getNumberFromString($(this).parent().parent().parent().attr('id'));
         delIssue(issueID);
         $(this).parent().parent().parent().hide();
+        updateManagerData('del');
     });
 }
 
 function addSearchResultItem(item, position) {
-    var outHTML = '';
-    var title = '<div class="item-title"><h4><a href="' + item.html_url + '">' + item.title + '</a></h4></div>';
-    var descr = '<div class="item-descr">' + item.body + '</div>';
-    var number = '<div class="item-number">#' + item.number + '</div>';
-    var inWorkButton = '<button type="button" class="in-work btn btn-primary">In Work</button>'
+    let outHTML = '';
+    let title = '<div class="item-title"><h4><a href="' + item.html_url + '">' + item.title + '</a></h4></div>';
+    let descr = '<div class="item-descr">' + item.body + '</div>';
+    let number = '<div class="item-number">#' + item.number + '</div>';
+    let inWorkButton = '<button type="button" class="in-work btn btn-primary">In Work</button>'
     outHTML = number + title + descr + inWorkButton;
     outHTML = '<li id="item-' + position + '">' + outHTML + '</li>';
     return outHTML;
@@ -94,7 +102,7 @@ function addIssueInWork(issueID) {
         url: items[position].html_url,
         title: items[position].title
     }
-    let newIssueID = 'issue-in-work-' + issuesInWork.length;
+    let newIssueID = 'issue-in-work-' + ISSUES_IN_WORK.length;
     let title = '<a href="' + issue.url + '">' + issue.title + '</a>';
     let prButton = '<button class="button-pr btn btn-success btn-sm">PR</button>';
     let delButton = '<button class="button-del btn btn-danger btn-sm">DEL</button>';
@@ -103,7 +111,7 @@ function addIssueInWork(issueID) {
     newIssue += '<div class="col-md-5 btn-group pull-right">' + buttons + '</div>';
     inWorkIssueList += '<li id="' + newIssueID + '"><div class="row issue-in-columns">' + newIssue + '</div></li>';
     $('#issue-in-work').find('ul').html(inWorkIssueList);
-    issuesInWork.push(issue);
+    ISSUES_IN_WORK.push(issue);
 }
 
 function addIssueToPR(issueID) {
@@ -111,16 +119,55 @@ function addIssueToPR(issueID) {
     let prIssueList= $('#pr-issue').find('ul').html();
     let newIssue = '';
     let issue = {
-        url: issuesInWork[position].url,
-        title: issuesInWork[position].title
+        url: ISSUES_IN_WORK[position].url,
+        title: ISSUES_IN_WORK[position].title
     }
     let title = '<a href="' + issue.url + '">' + issue.title + '</a>';
     newIssue += '<li><div class="issue-in-columns">' + title + '</div></li>';
     prIssueList += newIssue;
     $('#pr-issue').find('ul').html(prIssueList);
-    issuesPR.push(issue);
+    ISSUES_PR.push(issue);
+    ISSUES_IN_WORK.pop();
 }
 
 function delIssue(id) {
+    ISSUES_IN_WORK.pop();
+}
 
+function updateManagerData(action, issue) {
+    let storage = getParsedStorage();
+    if (storage) {
+        switch (action) {
+            case "add in_work":
+                storage.inWork.push(issue);
+                break;
+            case "add pr":
+                storage.pr.push(issue);
+                storage.inWork.pop();
+                break;
+            case "del":
+                storage.inWork.pop();
+                break;
+            default:
+        }
+        window.sessionStorage.setItem("ManagerData", JSON.stringify(storage));
+    } else {
+        setManagerData();
+    }
+}
+
+function getParsedStorage() {
+    let storage = window.sessionStorage.getItem("ManagerData");
+    if (storage) {
+        storage = JSON.parse(storage);
+    }
+    return storage;
+}
+
+function setManagerData() {
+    let ManagerData = {
+        inWork: [],
+        pr: []
+    };
+    window.sessionStorage.setItem("ManagerData", JSON.stringify(ManagerData));
 }
