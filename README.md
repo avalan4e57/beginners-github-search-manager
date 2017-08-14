@@ -22,3 +22,10 @@ doesn't appear in search list again.
 3) Open `http://localhost:8080` in your browser.
 4) Enjoy the app.
 
+# How to contribute
+1) Fork the repo.
+2) Clone your fork.
+3) Create a branch.
+4) Make your changes.
+5) Push changes to your fork.
+6) Create Pull Request.
