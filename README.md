@@ -12,3 +12,13 @@ In this box user has two clickable buttons: 'PR' and 'DEL'.
 If 'PR' is clicked then issue is moved from 'issues in work' to 'PR-ed issues'.
 If 'DEL' is clicked then issue is just deleted from 'issues in work' and
 doesn't appear in search list again.
+
+# How to use
+1) Download or clone the project. 
+2) Use node.js global http-server https://www.npmjs.com/package/http-server.
+   - Download & install node.js and npm https://www.npmjs.com/get-npm
+   - Install http-server globally ( run this line `npm install http-server -g` in terminal )
+   - Run http-server with path to beginners-github-search-manager ( run in terminal `http-server /{path_to_project_folder}` )
+3) Open `http://localhost:8080` in your browser.
+4) Enjoy the app.
+
