@@ -1,5 +1,3 @@
-const ISSUES_IN_WORK = [];
-const ISSUES_PR = [];
 
 $(function() {
     init();
@@ -8,6 +6,8 @@ $(function() {
 function init() {
     var issuesSearchResults = [];
     var uri = 'https://api.github.com/search/issues?q=language:JavaScript+is:up-for-grabs+state:open';
+    showStored();
+    listenClickEvents(clickPR, clickDEL);
     listenSEARCH(uri);
 }
 
@@ -32,7 +32,9 @@ function showSearchResults(json) {
     let outHTML = '<h2>' + resultsNumber + ' issues</h2>';
     let items = issuesSearchResults;
     items.forEach(function(item, i, items) {
-        outHTML += addSearchResultItem(item, i);
+        if (!isStored(item)) {
+            outHTML += addSearchResultItem(item, i);
+        }
     });
     $('#search-results').html(outHTML);
 }
@@ -47,11 +49,9 @@ function clickINWORK() {
     $('.in-work').on('click', function(e) {
         e.preventDefault();
         let issueID = getNumberFromString($(this).parent().attr('id'));
-        addIssueInWork(issueID);
+        let issue = getIssueFromSearchList(issueID);
+        addIssueInWork(issue);
         $(this).parent().hide();
-        let issue = ISSUES_IN_WORK.pop();
-        ISSUES_IN_WORK.push(issue);
-        updateManagerData('add in_work', issue);
         listenClickEvents(clickPR, clickDEL);
     });
 }
@@ -59,23 +59,25 @@ function clickINWORK() {
 function clickPR() {
     $('.button-pr').on('click', function(e) {
         e.preventDefault();
-        let issueID = getNumberFromString($(this).parent().parent().parent().attr('id'));
-        addIssueToPR(issueID);
+        let issueHREF = $(this).parent().prev().find('a').attr('href');
+        let issue = getIssueFromInWorkList(issueHREF);
+        addIssueToPR(issue);
         $(this).parent().parent().parent().hide();
-        let issue = ISSUES_PR.pop();
-        ISSUES_PR.push(issue);
-        updateManagerData('add pr', issue);
     });
 }
 
 function clickDEL() {
     $('.button-del').on('click', function(e) {
         e.preventDefault();
-        let issueID = getNumberFromString($(this).parent().parent().parent().attr('id'));
-        delIssue(issueID);
+        let issueHREF = $(this).parent().prev().find('a').attr('href');
+        let issue = getIssueFromInWorkList(issueHREF);
+        deleteIssue(issue);
         $(this).parent().parent().parent().hide();
-        updateManagerData('del');
     });
+}
+
+function deleteIssue(issue) {
+    updateManagerData('del', issue);
 }
 
 function addSearchResultItem(item, position) {
@@ -93,71 +95,89 @@ function getNumberFromString(str) {
     return str.match(/\d+/g)[0];
 }
 
-function addIssueInWork(issueID) {
+function getIssueFromSearchList(issueID) {
     let position = getNumberFromString(issueID);
-    let inWorkIssueList = $('#issue-in-work').find('ul').html();
-    let newIssue = '';
     let items = issuesSearchResults;
     let issue = {
         url: items[position].html_url,
         title: items[position].title
     }
-    let newIssueID = 'issue-in-work-' + ISSUES_IN_WORK.length;
-    let title = '<a href="' + issue.url + '">' + issue.title + '</a>';
-    let prButton = '<button class="button-pr btn btn-success btn-sm">PR</button>';
-    let delButton = '<button class="button-del btn btn-danger btn-sm">DEL</button>';
-    let buttons = prButton + delButton;
-    newIssue += '<div class="col-md-7">' + title + '</div>';
-    newIssue += '<div class="col-md-5 btn-group pull-right">' + buttons + '</div>';
-    inWorkIssueList += '<li id="' + newIssueID + '"><div class="row issue-in-columns">' + newIssue + '</div></li>';
-    $('#issue-in-work').find('ul').html(inWorkIssueList);
-    ISSUES_IN_WORK.push(issue);
+    return issue;
 }
 
-function addIssueToPR(issueID) {
-    let position = getNumberFromString(issueID);
-    let prIssueList= $('#pr-issue').find('ul').html();
-    let newIssue = '';
-    let issue = {
-        url: ISSUES_IN_WORK[position].url,
-        title: ISSUES_IN_WORK[position].title
+function addIssueInWork(issue) {
+    updateManagerData('add in_work', issue);
+    showIssuesInWork();
+}
+
+function showIssuesInWork() {
+    let storage = getParsedStorage();
+    let inWorkIssueList = '';
+    for (let issue of storage.inWork) {
+        let newIssue = '';
+        let title = '<a href="' + issue.url + '">' + issue.title + '</a>';
+        let prButton = '<button class="button-pr btn btn-success btn-sm">PR</button>';
+        let delButton = '<button class="button-del btn btn-danger btn-sm">DEL</button>';
+        let buttons = prButton + delButton;
+        newIssue += '<div class="col-md-7">' + title + '</div>';
+        newIssue += '<div class="col-md-5 btn-group pull-right">' + buttons + '</div>';
+        inWorkIssueList += '<li><div class="row issue-in-columns">' + newIssue + '</div></li>';
     }
-    let title = '<a href="' + issue.url + '">' + issue.title + '</a>';
-    newIssue += '<li><div class="issue-in-columns">' + title + '</div></li>';
-    prIssueList += newIssue;
-    $('#pr-issue').find('ul').html(prIssueList);
-    ISSUES_PR.push(issue);
-    ISSUES_IN_WORK.pop();
+    $('#issue-in-work').find('ul').html(inWorkIssueList);
 }
 
-function delIssue(id) {
-    ISSUES_IN_WORK.pop();
+function getIssueFromInWorkList(issueID) {
+    let storage = getParsedStorage();
+    // let position = getNumberFromString(issueID);
+    let position = storage.inWork.findIndex(x => x.url == issueID);
+    let issue = {
+        url: storage.inWork[position].url,
+        title: storage.inWork[position].title
+    }
+    return issue;
+}
+
+function addIssueToPR(issue) {
+    updateManagerData('add pr', issue);
+    showIssuesInPR();
+}
+
+function showIssuesInPR() {
+    let storage = getParsedStorage();
+    let prIssueList = '';
+    for (let issue of storage.pr) {
+        let newIssue = '';
+        let title = '<a href="' + issue.url + '">' + issue.title + '</a>';
+        newIssue += '<li><div class="issue-in-columns">' + title + '</div></li>';
+        prIssueList += newIssue;
+    }
+    $('#pr-issue').find('ul').html(prIssueList);
 }
 
 function updateManagerData(action, issue) {
     let storage = getParsedStorage();
-    if (storage) {
-        switch (action) {
-            case "add in_work":
-                storage.inWork.push(issue);
-                break;
-            case "add pr":
-                storage.pr.push(issue);
-                storage.inWork.pop();
-                break;
-            case "del":
-                storage.inWork.pop();
-                break;
-            default:
-        }
-        window.sessionStorage.setItem("ManagerData", JSON.stringify(storage));
-    } else {
+    if (!storage) {
         setManagerData();
+        storage = getParsedStorage();
     }
+    switch (action) {
+        case "add in_work":
+            storage.inWork.push(issue);
+            break;
+        case "add pr":
+            storage.pr.push(issue);
+            storage.inWork = deleteObjFromArr(issue, storage.inWork, 'url');
+            break;
+        case "del":
+            storage.inWork = deleteObjFromArr(issue, storage.inWork, 'url');
+            break;
+        default:
+    }
+    localStorage.setItem("BGSM_ManagerData", JSON.stringify(storage));
 }
 
 function getParsedStorage() {
-    let storage = window.sessionStorage.getItem("ManagerData");
+    let storage = localStorage.getItem("BGSM_ManagerData");
     if (storage) {
         storage = JSON.parse(storage);
     }
@@ -169,5 +189,59 @@ function setManagerData() {
         inWork: [],
         pr: []
     };
-    window.sessionStorage.setItem("ManagerData", JSON.stringify(ManagerData));
+    localStorage.setItem("BGSM_ManagerData", JSON.stringify(ManagerData));
+}
+
+function isInWork(issue) {
+    let storage = getParsedStorage();
+    if (!storage) {
+        return false;
+    }
+    for (let item of storage.inWork) {
+        if (item.url === issue.url) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function isInPR(issue) {
+    let storage = getParsedStorage();
+    if (!storage) {
+        return false;
+    }
+    for (let item of storage.pr) {
+        if (item.url === issue.url) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function isStored(item) {
+    let issue = {
+        url: item.html_url,
+        title: item.title
+    }
+    if (isInPR(issue) || isInWork(issue)) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function showStored() {
+    let storage = getParsedStorage();
+    if (storage) {
+        showIssuesInWork();
+        showIssuesInPR();
+    }
+}
+
+function deleteObjFromArr(item, arr, id) {
+    let toDelete = [];
+    toDelete.push(item[id]);
+    return arr.filter(function(obj) {
+        return toDelete.indexOf(obj[id]) === -1;
+    });
 }
