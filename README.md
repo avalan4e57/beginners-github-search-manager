@@ -1,7 +1,7 @@
 # BGSM: Beginners Github Search Manager
 Helps beginners to search and contribute to open source projects with github
 
-Our goal: to find projects friendly to beginners and try to give a hand.
+Our goal: to find and manage projects friendly to beginners.
 
 BGSM filters search list from projects for which user already has made
 a Pull Request and from projects he/she is currently working on and also
