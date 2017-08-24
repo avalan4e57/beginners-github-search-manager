@@ -1,8 +1,10 @@
 var express = require('express')
 var path = require('path')
 var fs = require('fs')
+var GitHubApi = require("github");
 
 var app = express()
+var github = GitHubApi()
 
 app.use('/css', express.static(__dirname + '/public/css'))
 app.use('/js', express.static(__dirname + '/public/js'))
@@ -20,31 +22,49 @@ app.get('/', (req, res) => {
 })
 
 app.get('/search', (req, res) => {
-    let searchresults = JSON.parse(req.query.data)
-    fs.readFile(__dirname + '/managerdata.json', (err, data) => {
-        if (err) return console.error(err)
-        let managerdata = JSON.parse(data)
-        for (let stored of managerdata.inwork) {
-            searchresults = searchresults.filter((item) => {
-                return item.url !== stored.url
-            })
-        }
-        for (let deleted of managerdata.deleted) {
-            searchresults = searchresults.filter((item) => {
-                return item.url !== deleted
-            })
-        }
-        for (let stored of managerdata.pred) {
-            searchresults = searchresults.filter((item) => {
-                return item.url !== stored.url
-            })
-        }
-        // Поместить выпирающую за пределы строку под кат
-        // for (let item of searchresults) {
-        //     if (item.body.length > 300) item.body = item.body.slice(0, 299) + ' (... clcik reference to learn more)'
-        // }
-        res.render('searchresults', {issues: searchresults})
+    var searchresults = []
+
+    github.authenticate({
+        type: "token",
+        token: process.argv[2]
     })
+
+    github.search.issues({ q: 'language:JavaScript+is:up-for-grabs+state:open' }, (err, data) => {
+        // console.log(data)
+        for (let issue of data.data.items) {
+            searchresults.push({
+                "url": issue.html_url,
+                'title': issue.title,
+                'body': issue.body,
+                'number': issue.number
+            })
+        }
+
+        fs.readFile(__dirname + '/managerdata.json', (err, data) => {
+            if (err) return console.error(err)
+            let managerdata = JSON.parse(data)
+            for (let stored of managerdata.inwork) {
+                searchresults = searchresults.filter((item) => {
+                    return item.url !== stored.url
+                })
+            }
+            for (let deleted of managerdata.deleted) {
+                searchresults = searchresults.filter((item) => {
+                    return item.url !== deleted
+                })
+            }
+            for (let stored of managerdata.pred) {
+                searchresults = searchresults.filter((item) => {
+                    return item.url !== stored.url
+                })
+            }
+            res.render('searchresults', {issues: searchresults})
+        })//end readFile
+    })//end github.search.issues
+})//end app.get('/search')
+
+app.get('/nav/number', (req, res) => {
+
 })
 
 app.get('/inwork', (req, res) => {

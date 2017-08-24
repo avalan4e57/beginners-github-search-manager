@@ -1,27 +1,12 @@
 function showSearchResults() {
-    var items = []
-    let uri = 'https://api.github.com/search/issues?q=language:JavaScript+is:up-for-grabs+state:open'
-    $.getJSON(uri, (json) => {
-        for (let item of json.items) {
-            items.push({
-                'url': item.html_url,
-                'title': item.title,
-                'body': item.body,
-                'number': item.number
-            })
-        }
-        console.log(items.length)
-        $.ajax({
-            method: "GET",
-            data: { data: JSON.stringify(items) },
-            url: "/search",
-            cache: false
-        })
-        .done((results) => {
-            $('#search-results').html(results)
-        })
+    $.ajax({
+        method: "GET",
+        url: "/search",
+        cache: false
     })
-
+    .done((results) => {
+        $('#search-results').html(results)
+    })
 }
 
 function inWork() {
