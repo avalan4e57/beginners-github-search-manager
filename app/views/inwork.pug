@@ -1,0 +1,7 @@
+li
+    .row.issue
+        .title.col-md-7
+            a(href=issue.url)=issue.title
+        .buttons.btn-group.col-md-5
+            button(class='btn btn-success btn-sm' onclick='prIssue()') PR
+            button(class='btn btn-danger btn-sm' onclick='delIssue()') DEL

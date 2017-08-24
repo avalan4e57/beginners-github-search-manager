@@ -1,0 +1,33 @@
+html
+    head
+        meta(charset='utf-8')
+        meta(name='viewport' content='width=device-width, initial-scale=1.0')
+        title BGSM
+        link(rel='stylesheet', href='/css/bootstrap/bootstrap.min.css')
+        link(rel='stylesheet', href='/css/styles.css')
+    body
+        .container.row
+            .part-left.col-md-8
+                button(id='search-button', class='btn btn-success' onclick='showSearchResults()') Search
+                #search-results
+            .part-right.col-md-4
+                h6 Issues in work
+                #issue-in-work
+                    ul
+                        each item in inwork
+                            li
+                                .row.issue
+                                    .title.col-md-7
+                                        a(href=item.url)=item.title
+                                    .buttons.btn-group.col-md-5
+                                        button(class='btn btn-success btn-sm' onclick='prIssue()') PR
+                                        button(class='btn btn-danger btn-sm' onclick='delIssue()') DEL
+                h6 PR-ed issues
+                #pr-issue
+                    ul
+                        each item in pred
+                            li
+                                .row.issue
+                                    a(href=item.url)=item.title
+        script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js')
+        script(src='/js/everything.js')

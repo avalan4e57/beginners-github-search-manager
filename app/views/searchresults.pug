@@ -1,0 +1,9 @@
+ul
+  each issue in issues
+    li
+        .number='#'+issue.number
+        .title
+            h4
+                a(href=issue.url)=issue.title
+        .body=issue.body
+        button.in-work.btn.btn-primary(onclick="inWork()")='In Work'
