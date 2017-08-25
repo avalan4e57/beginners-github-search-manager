@@ -20,7 +20,7 @@ function showMore() {
     let pageNumber = window.location.search.substr(1).split("=")[1]
     pageNumber++
     history.pushState("", document.title, window.location.pathname + "?page=" + pageNumber.toString())
-    let data = "&page=" + pageNumber
+    let data = pageNumber
     console.log(data)
     $.ajax({
         method: "GET",

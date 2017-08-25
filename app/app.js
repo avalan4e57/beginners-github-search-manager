@@ -21,15 +21,15 @@ app.get('/', (req, res) => {
 })
 
 app.get('/search', (req, res) => {
-    let query = 'language:JavaScript+is:up-for-grabs+state:open'
-    addsr.add(query, rend => {
+    // let query = 'language:JavaScript+is:up-for-grabs+state:open'
+    addsr.add(1, req.query.totalPages, rend => {
         res.render('searchresults', rend)
     })
 })//end app.get('/search')
 
 app.get('/showmore', (req, res) => {
-    let query = 'language:JavaScript+is:up-for-grabs+state:open+' + req.query.page
-    addsr.add(query, rend => {
+    // let query = 'language:JavaScript+is:up-for-grabs+state:open+' + req.query.page
+    addsr.add(req.query.page, req.query.totalPages, rend => {
         res.render('searchresults', rend)
     })
 })//end app.get('/showmore')
