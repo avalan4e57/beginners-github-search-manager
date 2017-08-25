@@ -1,16 +1,9 @@
 var express = require('express')
 var path = require('path')
 var fs = require('fs')
-var GitHubApi = require("github")
 var addsr = require("./mymodules/add-sr.js")
 
 var app = express()
-var github = GitHubApi()
-
-github.authenticate({
-    type: "token",
-    token: "b1881cd13b64b30d7ccbb40a50d2a4a0f52089eb",
-})
 
 app.use('/css', express.static(__dirname + '/public/css'))
 app.use('/js', express.static(__dirname + '/public/js'))
