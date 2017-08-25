@@ -1,3 +1,7 @@
+window.onload = () => {
+    history.replaceState("", document.title, window.location.pathname);
+}
+
 function showSearchResults() {
     $.ajax({
         method: "GET",
@@ -5,7 +9,9 @@ function showSearchResults() {
         cache: false
     })
     .done((results) => {
-        $('#search-results').html(results)
+        history.pushState("", document.title, window.location + "?page=1")
+        // $('#search-results').html(results)
+        $(results).appendTo("#search-results")
     })
 }
 
