@@ -1,10 +1,9 @@
 var express = require('express')
 var path = require('path')
 var fs = require('fs')
-var GitHubApi = require("github");
+var addsr = require("./mymodules/add-sr.js")
 
 var app = express()
-var github = GitHubApi()
 
 app.use('/css', express.static(__dirname + '/public/css'))
 app.use('/js', express.static(__dirname + '/public/js'))
@@ -22,50 +21,18 @@ app.get('/', (req, res) => {
 })
 
 app.get('/search', (req, res) => {
-    var searchresults = []
-
-    github.authenticate({
-        type: "token",
-        token: process.argv[2]
+    let query = 'language:JavaScript+is:up-for-grabs+state:open'
+    addsr.add(query, rend => {
+        res.render('searchresults', rend)
     })
-
-    github.search.issues({ q: 'language:JavaScript+is:up-for-grabs+state:open' }, (err, data) => {
-        // console.log(data)
-        for (let issue of data.data.items) {
-            searchresults.push({
-                "url": issue.html_url,
-                'title': issue.title,
-                'body': issue.body,
-                'number': issue.number
-            })
-        }
-
-        fs.readFile(__dirname + '/managerdata.json', (err, data) => {
-            if (err) return console.error(err)
-            let managerdata = JSON.parse(data)
-            for (let stored of managerdata.inwork) {
-                searchresults = searchresults.filter((item) => {
-                    return item.url !== stored.url
-                })
-            }
-            for (let deleted of managerdata.deleted) {
-                searchresults = searchresults.filter((item) => {
-                    return item.url !== deleted
-                })
-            }
-            for (let stored of managerdata.pred) {
-                searchresults = searchresults.filter((item) => {
-                    return item.url !== stored.url
-                })
-            }
-            res.render('searchresults', {issues: searchresults})
-        })//end readFile
-    })//end github.search.issues
 })//end app.get('/search')
 
-app.get('/nav/number', (req, res) => {
-
-})
+app.get('/showmore', (req, res) => {
+    let query = 'language:JavaScript+is:up-for-grabs+state:open+' + req.query.page
+    addsr.add(query, rend => {
+        res.render('searchresults', rend)
+    })
+})//end app.get('/showmore')
 
 app.get('/inwork', (req, res) => {
     fs.readFile(__dirname + '/managerdata.json', (err, data) => {
