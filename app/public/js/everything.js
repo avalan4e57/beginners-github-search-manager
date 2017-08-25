@@ -11,14 +11,26 @@ function showSearchResults() {
     .done((results) => {
         history.pushState("", document.title, window.location + "?page=1")
         // $('#search-results').html(results)
-        $(results).appendTo("#search-results")
+        $(results).appendTo($("#search-results").find('ul'))
     })
 }
 
 function showMore() {
+    $(event.target).hide()
     let pageNumber = window.location.search.substr(1).split("=")[1]
     pageNumber++
     history.pushState("", document.title, window.location.pathname + "?page=" + pageNumber.toString())
+    let data = "&page=" + pageNumber
+    console.log(data)
+    $.ajax({
+        method: "GET",
+        data: { page: data },
+        url: "/showmore",
+        cache: false
+    })
+    .done(results => {
+        $(results).appendTo("#search-results")
+    })
 }
 
 function inWork() {

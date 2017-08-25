@@ -6,6 +6,11 @@ var GitHubApi = require("github");
 var app = express()
 var github = GitHubApi()
 
+github.authenticate({
+    type: "token",
+    token: "b1881cd13b64b30d7ccbb40a50d2a4a0f52089eb",
+})
+
 app.use('/css', express.static(__dirname + '/public/css'))
 app.use('/js', express.static(__dirname + '/public/js'))
 
@@ -23,11 +28,6 @@ app.get('/', (req, res) => {
 
 app.get('/search', (req, res) => {
     var searchresults = []
-
-    github.authenticate({
-        type: "token",
-        token: "b1881cd13b64b30d7ccbb40a50d2a4a0f52089eb",
-    })
 
     github.search.issues({ q: 'language:JavaScript+is:up-for-grabs+state:open' }, (err, data) => {
         // console.log(data)
@@ -63,9 +63,43 @@ app.get('/search', (req, res) => {
     })//end github.search.issues
 })//end app.get('/search')
 
-app.get('/nav/number', (req, res) => {
+app.get('/showmore', (req, res) => {
+    var searchresults = []
+    let link = 'language:JavaScript+is:up-for-grabs+state:open+' + req.query.page
+    github.search.issues({ q: link }, (err, data) => {
+        // console.log(data)
+        for (let issue of data.data.items) {
+            searchresults.push({
+                "url": issue.html_url,
+                'title': issue.title,
+                'body': issue.body,
+                'number': issue.number
+            })
+        }
 
-})
+        fs.readFile(__dirname + '/managerdata.json', (err, data) => {
+            if (err) return console.error(err)
+            let managerdata = JSON.parse(data)
+            for (let stored of managerdata.inwork) {
+                searchresults = searchresults.filter((item) => {
+                    return item.url !== stored.url
+                })
+            }
+            for (let deleted of managerdata.deleted) {
+                searchresults = searchresults.filter((item) => {
+                    return item.url !== deleted
+                })
+            }
+            for (let stored of managerdata.pred) {
+                searchresults = searchresults.filter((item) => {
+                    return item.url !== stored.url
+                })
+            }
+            res.render('searchresults', {issues: searchresults})
+        })//end readFile
+    })//end github.search.issues
+
+})//end app.get('/showmore')
 
 app.get('/inwork', (req, res) => {
     fs.readFile(__dirname + '/managerdata.json', (err, data) => {
