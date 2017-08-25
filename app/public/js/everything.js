@@ -29,7 +29,7 @@ function showMore() {
         cache: false
     })
     .done(results => {
-        $(results).appendTo("#search-results")
+        $(results).appendTo($("#search-results").find('ul'))
     })
 }
 
