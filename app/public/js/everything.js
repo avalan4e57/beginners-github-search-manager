@@ -15,6 +15,12 @@ function showSearchResults() {
     })
 }
 
+function showMore() {
+    let pageNumber = window.location.search.substr(1).split("=")[1]
+    pageNumber++
+    history.pushState("", document.title, window.location.pathname + "?page=" + pageNumber.toString())
+}
+
 function inWork() {
     $(event.target).parent().hide()
     let title = $(event.target).parent().find('a')
