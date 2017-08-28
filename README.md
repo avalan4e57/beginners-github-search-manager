@@ -24,8 +24,8 @@ doesn't appear in search list again.
 
 There's also a better way if you use UNIX os. After you got your token go to project's 
 root folder add create a `start.sh` file. Inside it write the folowing two lines of code:
-   `TOKEN="paste your token here"
-   npm start $TOKEN`
+   `TOKEN="paste your token here"`
+   `npm start $TOKEN`
 Then you can start the app any time just by typing `sh start.sh` in terminal. Now just
 press enter and run the script, but remember to do this while in project's root folder.
 
