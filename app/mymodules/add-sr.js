@@ -4,10 +4,9 @@ exports.add = (cur, callback) => {
     var GitHubApi = require("github")
 
     var github = GitHubApi()
-
     github.authenticate({
         type: "token",
-        token: "paste token here",
+        token: process.argv[2]
     })
 
     var curLink = []
@@ -16,7 +15,6 @@ exports.add = (cur, callback) => {
 
     if (cur == 1) {
         let queryLink = getLink(cur)
-        console.log("FIRST"+queryLink)
         github.getFirstPage(queryLink, (err, data) => {
             main(data, searchresults => {
                 result.issues = searchresults
