@@ -1,4 +1,4 @@
-exports.add = (cur, last, callback) => {
+exports.add = (cur, callback) => {
     var path = require('path')
     var fs = require('fs')
     var GitHubApi = require("github")
@@ -7,7 +7,7 @@ exports.add = (cur, last, callback) => {
 
     github.authenticate({
         type: "token",
-        token: "b1881cd13b64b30d7ccbb40a50d2a4a0f52089eb",
+        token: "b1881cd13b64b30d7ccbb40a50d2a4a0f52089eb"
     })
 
     var curLink = []
@@ -15,15 +15,8 @@ exports.add = (cur, last, callback) => {
     var result = {}
 
     if (cur == 1) {
-        curLink = [
-            getLink("next", url, cur, last),
-            getLink("last", url, cur, last),
-            getLink("first", url, cur, last)
-        ]
-        result.totalPages = curLink[1]
-
-        let queryLink = curLink.join(", ")
-        console.log(queryLink)
+        let queryLink = getLink(cur)
+        console.log("FIRST"+queryLink)
         github.getFirstPage(queryLink, (err, data) => {
             main(data, searchresults => {
                 result.issues = searchresults
@@ -31,15 +24,8 @@ exports.add = (cur, last, callback) => {
             })
         })//end github.search.issues
     } else {
-        curLink = [
-            getLink("next", url, cur, last),
-            getLink("last", url, cur, last),
-            getLink("first", url, cur, last),
-            getLink("prev", url, cur, last)
-        ]
-
-        let queryLink = curLink.join(", ")
-        console.log(queryLink)
+        let queryLink = getLink(cur)
+        console.log("FURTHER"+queryLink)
         if (github.hasNextPage(queryLink)) {
             github.getNextPage(queryLink, (err, data) => {
                 main(data, searchresults => {
@@ -54,34 +40,17 @@ exports.add = (cur, last, callback) => {
         }
     }
 
-
-
-    ///////////////////////////
-    function getLink(name, url, curPage, lastPage) {
+    function getLink(curPage) {
         curPage = Number(curPage)
-        var link = ""
-        switch (name) {
-            case "next":
-                link += '<' + url + '&page=' + (curPage + 1).toString() + '>; rel="next"'
-                break;
-            case "prev":
-                link += '<' + url + '&page=' + (curPage - 1).toString() + '>; rel="prev"'
-                break;
-            case "first":
-                link += '<' + url + '&page=1>; rel="first"'
-                break;
-            case "last":
-                link += '<' + url + '&page=' + lastPage + '>; rel="last"'
-                break;
-            default:
-                link = null
-        }
-        return link
+        let next = '<' + url + '&page=' + (curPage + 1).toString() + '>; rel="next"'
+        let first = '<' + url + '&page=1>; rel="first"'
+        let arr = [next, first]
+        return arr.join(", ")
     }
 
     function main(data, callback) {
         var searchresults = []
-        console.log(data)
+        // console.log(data)
         for (let issue of data.data.items) {
             searchresults.push({
                 "url": issue.html_url,
@@ -109,10 +78,6 @@ exports.add = (cur, last, callback) => {
                     return item.url !== stored.url
                 })
             }
-            // let rend = {
-            //     "issues": searchresults,
-            //     "totalPages": totalPages
-            // }
             callback(searchresults)
         })//end readFile
     }

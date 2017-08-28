@@ -21,15 +21,13 @@ app.get('/', (req, res) => {
 })
 
 app.get('/search', (req, res) => {
-    // let query = 'language:JavaScript+is:up-for-grabs+state:open'
-    addsr.add(1, req.query.totalPages, rend => {
+    addsr.add(1, rend => {
         res.render('searchresults', rend)
     })
 })//end app.get('/search')
 
 app.get('/showmore', (req, res) => {
-    // let query = 'language:JavaScript+is:up-for-grabs+state:open+' + req.query.page
-    addsr.add(req.query.page, req.query.totalPages, rend => {
+    addsr.add(req.query.page, rend => {
         res.render('searchresults', rend)
     })
 })//end app.get('/showmore')
@@ -41,7 +39,6 @@ app.get('/inwork', (req, res) => {
         let newissue = JSON.parse(req.query.data)
         managerdata.inwork.push(newissue)
         fs.writeFileSync(__dirname + '/managerdata.json', JSON.stringify(managerdata))
-        // res.send('New issue was added in work successfully')
         res.render('inwork', { issue: newissue })
     })
 })
