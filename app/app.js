@@ -1,9 +1,9 @@
-var express = require('express')
-var path = require('path')
-var fs = require('fs')
-var addsr = require("./mymodules/add-sr.js")
+const express = require('express')
+const path = require('path')
+const fs = require('fs')
+const addsr = require("./mymodules/add-sr.js")
 
-var app = express()
+const app = express()
 
 app.use('/css', express.static(__dirname + '/public/css'))
 app.use('/js', express.static(__dirname + '/public/js'))

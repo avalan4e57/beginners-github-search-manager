@@ -1,17 +1,16 @@
 exports.add = (cur, callback) => {
-    var path = require('path')
-    var fs = require('fs')
-    var GitHubApi = require("github")
+    const path = require('path')
+    const fs = require('fs')
+    const GitHubApi = require("github")
 
-    var github = GitHubApi()
+    const github = GitHubApi()
     github.authenticate({
         type: "token",
         token: process.argv[2]
     })
 
-    var curLink = []
-    var url = 'https://api.github.com/search/issues?q=language:JavaScript+is:up-for-grabs+state:open'
-    var result = {}
+    const url = 'https://api.github.com/search/issues?q=language:JavaScript+is:up-for-grabs+state:open'
+    let result = {}
 
     if (cur == 1) {
         let queryLink = getLink(cur)
@@ -46,7 +45,7 @@ exports.add = (cur, callback) => {
     }
 
     function main(data, callback) {
-        var searchresults = []
+        let searchresults = []
         for (let issue of data.data.items) {
             searchresults.push({
                 "url": issue.html_url,
