@@ -1,14 +1,14 @@
 {
-  "name": "search",
-  "version": "1.0.0",
+  "name": "Beginners Github Search Manager",
+  "version": "2.0.0",
   "description": "",
   "main": "app.js",
   "scripts": {
     "start": "node app/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Igor Chernega",
+  "license": "MIT",
   "dependencies": {
     "es6-promise": "^4.1.1",
     "express": "^4.15.4",
