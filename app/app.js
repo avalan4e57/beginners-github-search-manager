@@ -7,12 +7,12 @@ var app = express()
 
 app.use('/css', express.static(__dirname + '/public/css'))
 app.use('/js', express.static(__dirname + '/public/js'))
+app.use('/public', express.static(__dirname + '/public'))
 
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'pug')
 
 app.get('/', (req, res) => {
-    // res.sendFile(path.join(__dirname, 'onload.html'))
     fs.readFile(__dirname + '/managerdata.json', (err, data) => {
         if (err) return console.error(err)
         let managerdata = JSON.parse(data)

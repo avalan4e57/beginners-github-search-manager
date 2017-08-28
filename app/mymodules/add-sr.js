@@ -23,7 +23,6 @@ exports.add = (cur, callback) => {
         })//end github.search.issues
     } else {
         let queryLink = getLink(cur)
-        console.log("FURTHER"+queryLink)
         if (github.hasNextPage(queryLink)) {
             github.getNextPage(queryLink, (err, data) => {
                 main(data, searchresults => {
@@ -48,7 +47,6 @@ exports.add = (cur, callback) => {
 
     function main(data, callback) {
         var searchresults = []
-        // console.log(data)
         for (let issue of data.data.items) {
             searchresults.push({
                 "url": issue.html_url,

@@ -1,8 +1,10 @@
 window.onload = () => {
-    history.replaceState("", document.title, window.location.pathname);
+    history.replaceState("", document.title, window.location.pathname)
+    $('#loading-image').hide()
 }
 
 function showSearchResults() {
+    $('#loading-image').show()
     $.ajax({
         method: "GET",
         url: "/search",
@@ -10,13 +12,14 @@ function showSearchResults() {
     })
     .done((results) => {
         history.pushState("", document.title, window.location + "?page=1")
-        // $('#search-results').html(results)
+        $('#loading-image').hide()
         $(results).appendTo($("#search-results").find('ul'))
     })
 }
 
 function showMore() {
     $(event.target).hide()
+    $('#loading-image').show()
     let pageNumber = window.location.search.substr(1).split("=")[1]
     pageNumber++
     history.pushState("", document.title, window.location.pathname + "?page=" + pageNumber.toString())
@@ -29,6 +32,7 @@ function showMore() {
         cache: false
     })
     .done(results => {
+        $('#loading-image').hide()
         $(results).appendTo($("#search-results").find('ul'))
     })
 }
