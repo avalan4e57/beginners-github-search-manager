@@ -1,6 +1,7 @@
 var express = require('express')
 var path = require('path')
 var fs = require('fs')
+var addsr = require("./mymodules/add-sr.js")
 
 var app = express()
 
@@ -20,32 +21,16 @@ app.get('/', (req, res) => {
 })
 
 app.get('/search', (req, res) => {
-    let searchresults = JSON.parse(req.query.data)
-    fs.readFile(__dirname + '/managerdata.json', (err, data) => {
-        if (err) return console.error(err)
-        let managerdata = JSON.parse(data)
-        for (let stored of managerdata.inwork) {
-            searchresults = searchresults.filter((item) => {
-                return item.url !== stored.url
-            })
-        }
-        for (let deleted of managerdata.deleted) {
-            searchresults = searchresults.filter((item) => {
-                return item.url !== deleted
-            })
-        }
-        for (let stored of managerdata.pred) {
-            searchresults = searchresults.filter((item) => {
-                return item.url !== stored.url
-            })
-        }
-        // Поместить выпирающую за пределы строку под кат
-        // for (let item of searchresults) {
-        //     if (item.body.length > 300) item.body = item.body.slice(0, 299) + ' (... clcik reference to learn more)'
-        // }
-        res.render('searchresults', {issues: searchresults})
+    addsr.add(1, rend => {
+        res.render('searchresults', rend)
     })
-})
+})//end app.get('/search')
+
+app.get('/showmore', (req, res) => {
+    addsr.add(req.query.page, rend => {
+        res.render('searchresults', rend)
+    })
+})//end app.get('/showmore')
 
 app.get('/inwork', (req, res) => {
     fs.readFile(__dirname + '/managerdata.json', (err, data) => {
@@ -54,7 +39,6 @@ app.get('/inwork', (req, res) => {
         let newissue = JSON.parse(req.query.data)
         managerdata.inwork.push(newissue)
         fs.writeFileSync(__dirname + '/managerdata.json', JSON.stringify(managerdata))
-        // res.send('New issue was added in work successfully')
         res.render('inwork', { issue: newissue })
     })
 })
