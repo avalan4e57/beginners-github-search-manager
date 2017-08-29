@@ -1,17 +1,16 @@
+const path = require( 'path' )
+const fs = require( 'fs' )
+const GitHubApi = require( "github" )
+
+const github = GitHubApi()
+github.authenticate( {
+    type: "token",
+    token: process.argv[2]
+})
+
 exports.add = ( cur, callback ) => {
-    const path = require( 'path' )
-    const fs = require( 'fs' )
-    const GitHubApi = require( "github" )
-
-    const github = GitHubApi()
-    github.authenticate( {
-        type: "token",
-        token: process.argv[2]
-    })
-
     const url = 'https://api.github.com/search/issues?q=language:JavaScript+is:up-for-grabs+state:open'
     let result = {}
-
     // Here we get required page via github API
     // The reason for this that we can't get all the results at one time
     // but only page by page because of github API limitations

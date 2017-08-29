@@ -2,11 +2,10 @@ const express = require( 'express' )
 const path = require( 'path' )
 const fs = require( 'fs' )
 const addsr = require( "./mymodules/add-sr.js" )
+const mis = require( "./mymodules/manipulate-issues.js" )
 
-const app = express( )
+const app = express()
 
-app.use( '/css', express.static( __dirname + '/public/css' ) )
-app.use( '/js', express.static( __dirname + '/public/js' ) )
 app.use( '/public', express.static( __dirname + '/public' ) )
 
 app.set( 'views', path.join( __dirname, 'views' ) )
@@ -18,7 +17,7 @@ app.get( '/', ( req, res ) => {
         let managerdata = JSON.parse( data )
         res.render( 'index', { pred: managerdata.pred, inwork: managerdata.inwork } )
     })
-})
+})//end app.get( '/' )
 
 app.get( '/search', ( req, res ) => {
     addsr.add( 1, rend => {
@@ -33,39 +32,21 @@ app.get( '/showmore', ( req, res ) => {
 })//end app.get( '/showmore' )
 
 app.get( '/inwork', ( req, res ) => {
-    fs.readFile( __dirname + '/managerdata.json', ( err, data ) => {
-        if ( err )return console.error( err )
-        let managerdata = JSON.parse( data )
-        let newissue = JSON.parse( req.query.issue )
-        managerdata.inwork.push( newissue )
-        fs.writeFileSync( __dirname + '/managerdata.json', JSON.stringify( managerdata ) )
-        res.render( 'inwork', { issue: newissue } )
+    mis.add( "inwork", req, issue => {
+        res.render( 'inwork', issue )
     })
-})
+})//end app.get( '/inwork' )
 
 app.get( '/del', ( req, res ) => {
-    fs.readFile( __dirname + '/managerdata.json', ( err, data ) => {
-        if ( err )return console.error( err )
-        let managerdata = JSON.parse( data )
-        let issuetodel = JSON.parse( req.query.issue )
-        managerdata.deleted.push( issuetodel )
-        managerdata.inwork = managerdata.inwork.filter( issue => issue.url !== issuetodel.url )
-        fs.writeFileSync( __dirname + '/managerdata.json', JSON.stringify( managerdata ) )
-        res.send( 'Issue with href=' + issuetodel.url + ' was deleted successfully' )
+    mis.add( "deleted", req, issue => {
+        res.send( 'Issue with href=' + issue.url + ' was deleted successfully' )
     })
-})
+})//end app.get( '/del' )
 
 app.get( '/pr', ( req, res ) => {
-    fs.readFile( __dirname + '/managerdata.json', ( err, data ) => {
-        if ( err )return console.error( err )
-        let managerdata = JSON.parse( data )
-        let issuetopr = JSON.parse( req.query.issue )
-        managerdata.pred.push( issuetopr )
-        managerdata.inwork = managerdata.inwork.filter( issue => issue.url !== issuetopr.url )
-        fs.writeFileSync( __dirname + '/managerdata.json', JSON.stringify( managerdata ) )
-        let issue = issuetopr
-        res.render( 'issue', { issue } )
+    mis.add( "pred", req, issue => {
+        res.render('issue', issue)
     })
-})
+})//end app.get( '/pr' )
 
 app.listen( 8080 )
